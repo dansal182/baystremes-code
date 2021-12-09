@@ -36,6 +36,18 @@ class EVM(object):
             out[i] = self.density(xvec[i])
         return out
 
+    def vec_quantile(self, xvec):
+        out = np.linspace(1, 20, len(xvec))
+        for i in range(len(xvec)):
+            out[i] = self.quantile(xvec[i])
+        return out
+
+    def vec_distribution(self, xvec):
+        out = np.linspace(1, 20, len(xvec))
+        for i in range(len(xvec)):
+            out[i] = self.distribution(xvec[i])
+        return out
+
     def likelihood(self, xsample):
         xlk = self.vec_density(xsample)
         return np.exp(np.log(xlk).sum())
@@ -70,7 +82,7 @@ class Frechet(EVM):
         a, th, g = self.alpha, self.theta, self.gamma
         aux = (x - g) / th
         if aux > 0.0:
-            return aux ** (-(a + 1)) * self.distribution(x)
+            return a / th * aux ** (-(a + 1)) * self.distribution(x)
         else:
             return 0.0
 
@@ -89,7 +101,7 @@ class Pareto(EVM):
     def density(self, x):
         a, u = self.alpha, self.threshold
         if x > u:
-            return a * u * (x/u)**(-(a+1))
+            return a / u * (x/u)**(-(a+1))
         else:
             return 0.0
 
